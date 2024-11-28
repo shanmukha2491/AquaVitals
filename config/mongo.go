@@ -69,8 +69,8 @@ func CreateUser(user *model.User) error {
 
 }
 
-func FindOne(email string, userId string) (model.User, error) {
-	filter := bson.M{"email": email, "userid": userId}
+func FindOne(email string, userName string) (model.User, error) {
+	filter := bson.M{"email": email, "username": userName}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -8,11 +8,11 @@ type Sensor struct {
 	Data       map[string]string
 }
 type User struct {
-	UserId    string    `json:"id"`
+	UserId    string    `json:"user_id"`
 	UserName  string    `json:"username"`
 	Password  string    `json:"password"`
 	Email     string    `json:"email"`
 	AuthToken string    `json:"authToken"`
 	Sensors   []Sensor  `json:"sensor_data"`
-	CreateAt  time.Time `json:"create_at"`
+	CreatedAt time.Time `json:"created_at"`
 }

@@ -3,9 +3,11 @@ package model
 import "time"
 
 type Sensor struct {
-	SensorName string
-	Location   time.Location
-	Data       map[string]string
+	SensorName  string            `json:"name"`
+	Location    string            `json:"location"`
+	Data        map[string]string `json:"data"`
+	DataBaseUrl string            `json:"database_url"`
+	WebApiToken string            `json:"web_token"`
 }
 type User struct {
 	UserId    string    `json:"user_id"`

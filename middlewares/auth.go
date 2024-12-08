@@ -72,3 +72,30 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+
+func ExtractUsername(tokenString string) (string, error) {
+	// Parse the token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Ensure the signing method is correct
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return secretKey, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	// Extract the claims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		// Retrieve the username
+		if username, ok := claims["username"].(string); ok {
+			return username, nil
+		}
+		return "", fmt.Errorf("username not found in token")
+	}
+
+	return "", fmt.Errorf("invalid token")
+}

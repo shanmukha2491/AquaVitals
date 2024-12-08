@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -81,3 +82,30 @@ func FindOne(email string, userName string) (model.User, error) {
 	}
 	return user, nil
 }
+
+func RegisterSensor(newSensor model.Sensor, userName string) error {
+	// MongoDB filter to find the user document by username
+	filter := bson.M{"username": userName}
+
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+
+	// MongoDB update to push the new sensor to the `sensors` array
+	pushUpdate := bson.M{
+		"$push": bson.M{"sensors": newSensor},
+	}
+
+	// Perform the push update
+	result, err := _UserCollection.UpdateOne(ctx, filter, pushUpdate)
+	if err != nil {
+		return fmt.Errorf("failed to push new sensor: %v", err)
+	}
+
+	// Log the result
+	fmt.Printf("Matched %d documents and modified %d documents.\n", result.MatchedCount, result.ModifiedCount)
+
+	return nil
+}
+

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -61,6 +62,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	user.CreatedAt = time.Now()
 	newId := uuid.New()
 	user.UserId = newId.String()
+	user.Sensors = []model.Sensor{}
 	err = config.CreateUser(&user)
 	if err != nil {
 		http.Error(w, "Error Creating in database", http.StatusInternalServerError)
@@ -73,4 +75,37 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func RegisterSensorHandler(w http.ResponseWriter, r *http.Request) {
+
+	tokenString := r.Header.Get("Authorization")
+	if tokenString == "" {
+		http.Error(w, "Unauthorised", http.StatusUnauthorized)
+		return
+	}
+	tokenString = tokenString[len("Bearer "):]
+	var newSensor model.Sensor
+	err := json.NewDecoder(r.Body).Decode(&newSensor)
+	fmt.Println(newSensor)
+	if err != nil {
+		fmt.Println("Error:", err)
+
+		http.Error(w, "Invalid Sensor Data", http.StatusBadRequest)
+		return
+	}
+	username, err := auth.ExtractUsername(tokenString)
+	if err != nil {
+		fmt.Println("Error:", err)
+
+		http.Error(w, "User not found in token", http.StatusUnauthorized)
+		return
+	}
+	err = config.RegisterSensor(newSensor, username)
+	if err != nil {
+		fmt.Println("Error:", err)
+
+		http.Error(w, "Failed To register sensor", http.StatusUnauthorized)
+		return
+	}
 }

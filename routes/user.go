@@ -20,4 +20,7 @@ func RegisterUserRouter(router *mux.Router) {
 
 	router.Handle("/v1/user/register_sensor",
 		auth.AuthorizationMiddleware(http.HandlerFunc(handlers.RegisterSensorHandler))).Methods(http.MethodPut)
+
+	router.Handle("/v1/user/home", 
+		auth.AuthorizationMiddleware(http.HandlerFunc(handlers.FetchUser))).Methods(http.MethodGet)
 }

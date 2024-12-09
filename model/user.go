@@ -3,6 +3,7 @@ package model
 import "time"
 
 type Sensor struct {
+	SensorId    string            `json:"sensor_id"`
 	SensorName  string            `json:"name"`
 	Location    string            `json:"location"`
 	Data        map[string]string `json:"data"`

@@ -109,3 +109,45 @@ func RegisterSensorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+
+type email struct{
+	Email string `json:"email"`
+}
+func FetchUser(w http.ResponseWriter, r *http.Request){
+	
+	w.Header().Set("Content-Type", "application/json")
+	var data email
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil{
+		http.Error(w, "Invalid data", http.StatusBadRequest)
+		return
+	}
+	tokenString := r.Header.Get("Authorization")
+	if tokenString == "" {
+		http.Error(w, "Unauthorised", http.StatusUnauthorized)
+		return
+	}
+	tokenString = tokenString[len("Bearer "):]
+
+	username, err := auth.ExtractUsername(tokenString)
+	if err != nil {
+		fmt.Println("Error:", err)
+
+		http.Error(w, "User not found in token", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := config.FindOne(data.Email, username)
+	if err != nil{
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(user)
+	if err != nil{
+		http.Error(w, "Failed to fetch data", http.StatusNotFound)
+		return
+	}
+
+
+}

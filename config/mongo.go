@@ -22,26 +22,30 @@ var _UserCollection *mongo.Collection
 var _AdminCollection_ *mongo.Collection
 
 func ConnectDB() *mongo.Client {
-
-	// err := godotenv.Load(".env")
-
-	// if err != nil {
-	// 	log.Fatal("error loading url", err)
-	// 	return nil
-	// }
-
-	// MongoURl := os.Getenv("MONGO_URL")
-
+	// Set MongoDB connection options
 	clientOptions := options.Client().ApplyURI("mongodb+srv://shanmukha2491:AquaVitals@cluster0.4v93m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-	client, err := mongo.Connect(context.Background(), clientOptions)
+
+	// Create a context with a timeout to avoid indefinite hanging
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Attempt to connect to MongoDB
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatalf("Error Occured while connecting to database")
+		log.Fatalf("Error occurred while connecting to database: %v", err)
 		return nil
 	}
-	Client = client
-	log.Println("DataBase connection is Success")
-	return client
 
+	// Verify the connection
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		log.Fatalf("Failed to ping MongoDB: %v", err)
+		return nil
+	}
+
+	log.Println("Database connection was successful!")
+	Client = client
+	return client
 }
 
 func UserCollection(client *mongo.Client) *mongo.Collection {

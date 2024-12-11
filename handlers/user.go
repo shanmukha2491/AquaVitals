@@ -78,36 +78,59 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterSensorHandler(w http.ResponseWriter, r *http.Request) {
+	// Set response header
+	w.Header().Set("Content-Type", "application/json")
 
+	// Extract token from Authorization header
 	tokenString := r.Header.Get("Authorization")
 	if tokenString == "" {
-		http.Error(w, "Unauthorised", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized: No token provided", http.StatusUnauthorized)
 		return
 	}
 	tokenString = tokenString[len("Bearer "):]
+
+	// Decode the incoming JSON into newSensor
 	var newSensor model.Sensor
 	err := json.NewDecoder(r.Body).Decode(&newSensor)
-	fmt.Println(newSensor)
 	if err != nil {
-		fmt.Println("Error:", err)
-
+		fmt.Println("Error decoding sensor data:", err)
 		http.Error(w, "Invalid Sensor Data", http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("Decoded Sensor: %+v\n", newSensor)
+
+	// Extract username from token
 	username, err := auth.ExtractUsername(tokenString)
 	if err != nil {
-		fmt.Println("Error:", err)
-
+		fmt.Println("Error extracting username from token:", err)
 		http.Error(w, "User not found in token", http.StatusUnauthorized)
 		return
 	}
+	fmt.Printf("Extracted username: %s\n", username)
+
+	// Register the sensor in the database
 	err = config.RegisterSensor(newSensor, username)
 	if err != nil {
-		fmt.Println("Error:", err)
-
-		http.Error(w, "Failed To register sensor", http.StatusUnauthorized)
+		fmt.Println("Error registering sensor:", err)
+		http.Error(w, "Failed to register sensor", http.StatusInternalServerError)
 		return
 	}
+	fmt.Println("Sensor successfully registered.")
+
+	// Send success message
+	successMessage := struct {
+		Success bool `json:"success"`
+	}{
+		Success: true,
+	}
+
+	err = json.NewEncoder(w).Encode(&successMessage)
+	if err != nil {
+		fmt.Println("Error encoding success message:", err)
+		http.Error(w, "Error sending success message", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("Success response sent.")
 }
 
 
@@ -143,7 +166,12 @@ func FetchUser(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	err = json.NewEncoder(w).Encode(user)
+	sensorData := struct{
+		Sensors []model.Sensor `json:"sensors"`
+	}{
+		Sensors: user.Sensors,
+	}
+	err = json.NewEncoder(w).Encode(sensorData)
 	if err != nil{
 		http.Error(w, "Failed to fetch data", http.StatusNotFound)
 		return

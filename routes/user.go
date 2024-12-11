@@ -14,7 +14,7 @@ func RegisterUserRouter(router *mux.Router) {
 
 	// router.Handle("/v1/user/login",
 	// 	auth.AuthorizationMiddleware(http.HandlerFunc(handlers.LoginHandler))).Methods(http.MethodPost)
-	router.HandleFunc("v1/user/login", handlers.LoginHandler).Methods(http.MethodPost)
+	router.HandleFunc("/v1/user/login", handlers.LoginHandler).Methods(http.MethodPost)
 
 	router.HandleFunc("/v1/user/create",
 		handlers.SignUpHandler).Methods(http.MethodPost)

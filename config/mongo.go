@@ -23,16 +23,16 @@ var _AdminCollection_ *mongo.Collection
 
 func ConnectDB() *mongo.Client {
 
-	err := godotenv.Load(".env")
+	// err := godotenv.Load(".env")
 
-	if err != nil {
-		log.Fatal("error loading url", err)
-		return nil
-	}
+	// if err != nil {
+	// 	log.Fatal("error loading url", err)
+	// 	return nil
+	// }
 
-	MongoURl := os.Getenv("MONGO_URL")
+	// MongoURl := os.Getenv("MONGO_URL")
 
-	clientOptions := options.Client().ApplyURI(MongoURl)
+	clientOptions := options.Client().ApplyURI("mongodb+srv://shanmukha2491:AquaVitals@cluster0.4v93m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatalf("Error Occured while connecting to database")

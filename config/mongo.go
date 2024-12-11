@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
+
 	"time"
 
-	"github.com/joho/godotenv"
+
 	"github.com/shanmukha2491/AquaVitals/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

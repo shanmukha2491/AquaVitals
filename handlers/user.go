@@ -138,7 +138,7 @@ func FetchUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	user, err := config.FindOne(data.Email, username)
+	user, err := config.FindOneHome(data.Email, username)
 	if err != nil{
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

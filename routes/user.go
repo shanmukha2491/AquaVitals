@@ -11,10 +11,10 @@ import (
 
 func RegisterUserRouter(router *mux.Router) {
 	config.UserCollection(config.Client)
-	
+
 	// router.Handle("/v1/user/login",
 	// 	auth.AuthorizationMiddleware(http.HandlerFunc(handlers.LoginHandler))).Methods(http.MethodPost)
-	router.HandleFunc("v1/user/login", handlers.LoginHandler)
+	router.HandleFunc("v1/user/login", handlers.LoginHandler).Methods(http.MethodPost)
 
 	router.HandleFunc("/v1/user/create",
 		handlers.SignUpHandler).Methods(http.MethodPost)
@@ -22,6 +22,6 @@ func RegisterUserRouter(router *mux.Router) {
 	router.Handle("/v1/user/register_sensor",
 		auth.AuthorizationMiddleware(http.HandlerFunc(handlers.RegisterSensorHandler))).Methods(http.MethodPut)
 
-	router.Handle("/v1/user/home", 
+	router.Handle("/v1/user/home",
 		auth.AuthorizationMiddleware(http.HandlerFunc(handlers.FetchUser))).Methods(http.MethodGet)
 }

@@ -134,18 +134,11 @@ func RegisterSensorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-type email struct{
-	Email string `json:"email"`
-}
+
 func FetchUser(w http.ResponseWriter, r *http.Request){
 	
 	w.Header().Set("Content-Type", "application/json")
-	var data email
-	err := json.NewDecoder(r.Body).Decode(&data)
-	if err != nil{
-		http.Error(w, "Invalid data", http.StatusBadRequest)
-		return
-	}
+
 	tokenString := r.Header.Get("Authorization")
 	if tokenString == "" {
 		http.Error(w, "Unauthorised", http.StatusUnauthorized)
@@ -161,7 +154,7 @@ func FetchUser(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	user, err := config.FindOneHome(data.Email, username)
+	user, err := config.FindOneHome(username)
 	if err != nil{
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

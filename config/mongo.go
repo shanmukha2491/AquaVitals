@@ -93,8 +93,8 @@ func FindOne(password string, userName string) (model.User, error) {
 
 
 
-func FindOneHome(email string, userName string) (model.User, error) {
-	filter := bson.M{"email": email,"username": userName}
+func FindOneHome(userName string) (model.User, error) {
+	filter := bson.M{"username": userName}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

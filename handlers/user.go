@@ -22,7 +22,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err = config.FindOne(user.Email, user.UserName)
+	user, err = config.FindOne(user.Password, user.UserName)
 	if err != nil {
 		http.Error(w, "User Not Found", http.StatusNotFound)
 		return

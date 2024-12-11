@@ -75,7 +75,7 @@ func CreateUser(user *model.User) error {
 }
 
 func FindOne(password string, userName string) (model.User, error) {
-	filter := bson.M{"password": password, "username": userName}
+	filter := bson.M{"username": userName}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -83,6 +83,10 @@ func FindOne(password string, userName string) (model.User, error) {
 	err := _UserCollection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		return model.User{}, err
+	}
+
+	if user.Password != password{
+		return model.User{}, fmt.Errorf("wrong password")
 	}
 	return user, nil
 }

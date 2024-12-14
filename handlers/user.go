@@ -28,6 +28,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	newToken, err := auth.CreateToken(user.UserName)
+	if err != nil{
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+	user.AuthToken = newToken
+
 	err = json.NewEncoder(w).Encode(user)
 	if err != nil {
 		http.Error(w, "Error Parsing User Data", http.StatusBadRequest)
